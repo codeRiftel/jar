@@ -1,0 +1,9 @@
+{
+    "name": "xyz.coderiftel.jar",
+    "version": "1.0.0",
+    "description": "JSON parser",
+    "displayName": "jar",
+    "author": {"name": "coderiftel"},
+    "hideInEditor": false,
+    "keywords": ["lightweight", "simple", "json", "parser", "coderiftel", "jar"]
+}
