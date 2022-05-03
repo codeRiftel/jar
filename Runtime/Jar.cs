@@ -5,17 +5,18 @@ namespace jar {
         public int start;
         public int len;
         public int size;
+        public int width;
     }
 
     public static class Jar {
         public static int Parse(string t, Loc[] locs) {
             int i = 0;
-            var (len, size) = PriParse(t, ref i, 0, locs);
+            var (len, size, width) = PriParse(t, ref i, 0, locs);
             return len;
         }
 
-        private static (int, int) PriParse(string t, ref int i, int len, Loc[] locs) {
-            int imlen = 0, l = t.Length;
+        private static (int, int, int) PriParse(string t, ref int i, int len, Loc[] locs) {
+            int size = 0, width = 0, l = t.Length;
             while (i < l) switch (t[i]) {
                 case ' ':
                 case '\t':
@@ -43,25 +44,29 @@ namespace jar {
                     }
                     numLoc.len = i - numLoc.start;
                     locs[len++] = numLoc;
-                    imlen++;
+                    size++;
+                    width++;
                     break;
                 case 't':
                 case 'f':
                 case 'n':
                     var target = "false";
                     if (t[i] == 't') target = "true"; else if (t[i] == 'n') target = "null";
-                    if (string.Compare(t, i, target, 0, target.Length) != 0) return (-1, -1);
+                    if (string.Compare(t, i, target, 0, target.Length) != 0) return (-1, -1, -1);
                     locs[len++] = new Loc { tok = Tok.Pri, start = i, len = target.Length };
                     i += target.Length;
-                    imlen++;
+                    size++;
+                    width++;
                     break;
                 case '"':
                     var strLoc = new Loc { tok = Tok.Str, start = i++ };
                     while (i < l && (t[i] != '"' || (t[i - 1] == '\\' && t[i - 2] != '\\'))) i++;
-                    if (i == l) return (-1, -1);
-                    strLoc.len = ++i - strLoc.start;
+                    if (i == l) return (-1, -1, -1);
+                    strLoc.len = ++i - strLoc.start - 2;
+                    strLoc.start++;
                     locs[len++] = strLoc;
-                    imlen++;
+                    size++;
+                    width++;
                     break;
                 case '[':
                 case '{':
@@ -69,22 +74,24 @@ namespace jar {
                     var tok = Tok.Arr;
                     if (t[i] == '{') tok = Tok.Obj;
                     locs[arrIndex] = new Loc { tok = tok, start = i++ };
-                    var size = 0;
-                    (len, size) = PriParse(t, ref i, len, locs);
+                    int inSize = 0, inWidth = 0;
+                    (len, inSize, inWidth) = PriParse(t, ref i, len, locs);
                     locs[arrIndex].len = i - locs[arrIndex].start;
-                    locs[arrIndex].size = size;
-                    imlen++;
+                    locs[arrIndex].size = inSize;
+                    locs[arrIndex].width = inWidth;
+                    size++;
+                    width += inWidth + 1;
                     break;
                 case ']':
                 case '}':
                     i++;
-                    return (len, imlen);
+                    return (len, size, width);
                 default:
                     i++;
                     break;
             }
 
-            return (len, imlen);
+            return (len, size, width);
         }
     }
 }
