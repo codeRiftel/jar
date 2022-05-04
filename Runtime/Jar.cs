@@ -9,15 +9,15 @@ namespace jar {
     }
 
     public static class Jar {
-        public static int Parse(string t, Loc[] locs) {
-            int i = 0;
-            var (len, size, width) = PriParse(t, ref i, 0, locs);
+        public static int Parse(string t, Loc[] locs, int start) {
+            if (t == null || locs == null) return -1;
+            var (len, size, width) = PriParse(t, ref start, 0, locs);
             return len;
         }
 
         private static (int, int, int) PriParse(string t, ref int i, int len, Loc[] locs) {
             int size = 0, width = 0, l = t.Length;
-            while (i < l) switch (t[i]) {
+            while (i < l && len < locs.Length) switch (t[i]) {
                 case ' ':
                 case '\t':
                 case '\r':
@@ -91,6 +91,7 @@ namespace jar {
                     break;
             }
 
+            if (len >= locs.Length) return (-1, -1, -1);
             return (len, size, width);
         }
     }
