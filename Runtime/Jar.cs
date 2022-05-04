@@ -11,7 +11,7 @@ namespace jar {
     public static class Jar {
         public static int Parse(string t, Loc[] locs, int start) {
             if (t == null || locs == null) return -1;
-            var (len, size, width) = PriParse(t, ref start, 0, locs);
+            var (len, size, width) = PriParse(t, ref start, start, locs);
             return len;
         }
 
