@@ -72,6 +72,7 @@ namespace jar {
                 case '[':
                 case '{':
                     var arrIndex = len++;
+                    if (arrIndex >= locs.Length) return (-1, -1, -1);
                     var tok = Tok.Arr;
                     if (t[i] == '{') tok = Tok.Obj;
                     locs[arrIndex] = new Loc { tok = tok, start = i++ };
