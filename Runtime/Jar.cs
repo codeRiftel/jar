@@ -18,7 +18,7 @@ namespace jar {
 
         private static (int, int, int) PriParse(string t, ref int i, int len, Loc[] locs) {
             int size = 0, width = 0, l = t.Length;
-            while (i < l && len < locs.Length) switch (t[i]) {
+            while (i < l && len < locs.Length && len >= 0 && i >= 0) switch (t[i]) {
                 case ' ':
                 case '\t':
                 case '\r':
@@ -93,7 +93,7 @@ namespace jar {
                     break;
             }
 
-            if (len >= locs.Length) return (-1, -1, -1);
+            if (len >= locs.Length || len < 0) return (-1, -1, -1);
             return (len, size, width);
         }
     }
